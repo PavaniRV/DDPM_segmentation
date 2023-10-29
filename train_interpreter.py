@@ -79,7 +79,9 @@ def evaluation(args, models):
         noise = None 
 
     preds, gts, uncertainty_scores = [], [], []
-    for img, label in tqdm(dataset):        
+    for img, label in tqdm(dataset):  
+        gc.collect()
+        torch.cuda.empty_cache()      
         img = img[None].to(dev())
         features = feature_extractor(img, noise=noise)
         features = collect_features(args, features)
@@ -109,9 +111,12 @@ def train(args):
     train_loader = DataLoader(dataset=train_data, batch_size=args['batch_size'], shuffle=True, drop_last=True)
 
     print(" *********************** Current dataloader length " +  str(len(train_loader)) + " ***********************")
+    print(args['start_model_num'], args['model_num'])
+    print("*************train_start***********")
     for MODEL_NUMBER in range(args['start_model_num'], args['model_num'], 1):
 
         gc.collect()
+        torch.cuda.empty_cache()
         classifier = pixel_classifier(numpy_class=(args['number_class']), dim=args['dim'][-1])
         classifier.init_weights()
 
@@ -168,6 +173,12 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     add_dict_to_argparser(parser, model_and_diffusion_defaults())
 
+    # MODEL_FLAGS="--attention_resolutions 32,16,8 --class_cond False --diffusion_steps 1000 --dropout 0.1 --image_size 256 --learn_sigma True --noise_schedule linear --num_channels 256 --num_head_channels 64 --num_res_blocks 2 --resblock_updown True --use_fp16 True --use_scale_shift_norm True"
+    # DATASET= "ffhq_34" # Available datasets: bedroom_28, ffhq_34, cat_15, horse_21
+
+    # exp_str = f'experiments/{DATASET}/datasetDDPM.json {MODEL_FLAGS}'
+                  
+
     parser.add_argument('--exp', type=str)
     parser.add_argument('--seed', type=int,  default=0)
 
@@ -194,11 +205,13 @@ if __name__ == '__main__':
     pretrained = [os.path.exists(os.path.join(opts['exp_dir'], f'model_{i}.pth')) 
                   for i in range(opts['model_num'])]
               
-    if not all(pretrained):
-        # train all remaining models
-        opts['start_model_num'] = sum(pretrained)
-        train(opts)
+    # if not all(pretrained):
+    #     # train all remaining models
+    #     opts['start_model_num'] = sum(pretrained)
+    #     train(opts)
     
     print('Loading pretrained models...')
+    gc.collect()
+    torch.cuda.empty_cache()
     models = load_ensemble(opts, device='cuda')
     evaluation(opts, models)

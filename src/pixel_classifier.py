@@ -109,6 +109,7 @@ def predict_labels(models, features, size):
 
 def save_predictions(args, image_paths, preds):
     palette = get_palette(args['category'])
+    print(args['exp_dir'])
     os.makedirs(os.path.join(args['exp_dir'], 'predictions'), exist_ok=True)
     os.makedirs(os.path.join(args['exp_dir'], 'visualizations'), exist_ok=True)
 

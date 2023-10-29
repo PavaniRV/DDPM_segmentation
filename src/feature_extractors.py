@@ -96,7 +96,8 @@ class FeatureExtractorDDPM(FeatureExtractor):
         argnames = inspect.getfullargspec(create_model_and_diffusion)[0]
         expected_args = {name: kwargs[name] for name in argnames}
         self.model, self.diffusion = create_model_and_diffusion(**expected_args)
-        
+        # print(model_path)
+        # model_path = '/home/pavani/kaggle/IISCCapstoneProject/LabelefficientSemantic Segmentaiton/ddpm-segmentation/pixel_classifiers/ffhq_34/datasetDDPM/50_150_250_5_6_7_8_12/model_9.pth'
         self.model.load_state_dict(
             dist_util.load_state_dict(model_path, map_location="cpu")
         )
