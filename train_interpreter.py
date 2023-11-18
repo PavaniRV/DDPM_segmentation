@@ -205,10 +205,10 @@ if __name__ == '__main__':
     pretrained = [os.path.exists(os.path.join(opts['exp_dir'], f'model_{i}.pth')) 
                   for i in range(opts['model_num'])]
               
-    # if not all(pretrained):
-    #     # train all remaining models
-    #     opts['start_model_num'] = sum(pretrained)
-    #     train(opts)
+    if not all(pretrained):
+        # train all remaining models
+        opts['start_model_num'] = sum(pretrained)
+        train(opts)
     
     print('Loading pretrained models...')
     gc.collect()
