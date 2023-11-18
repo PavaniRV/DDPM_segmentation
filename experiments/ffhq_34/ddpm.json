@@ -6,8 +6,8 @@
   "number_class": 34,
   "ignore_label": 255,
 
-  "training_path": "datasets/ffhq_34/real/train",
-  "validation_path": "datasets/ffhq_34/ddpm",
+  "training_path": "datasets/ffhq_34/real/train_small",
+  "validation_path": "datasets/ffhq_34/ddpm_small",
   "testing_path": "datasets/ffhq_34/real/test",
   "model_path": "checkpoints/ddpm/ffhq.pt",
 
